@@ -26,7 +26,7 @@ namespace socket_utils {
        */
       int Listen(int conections = 5) const;
 
-      std::pair<PeerSocketTCP, struct sockaddr_in> Accept() const;
+      PeerSocketTCP Accept() const;
 
       virtual explicit operator bool() const;
 

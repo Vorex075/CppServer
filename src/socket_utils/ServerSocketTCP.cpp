@@ -3,6 +3,7 @@
 #include "ServerSocketTCP.h"
 #include "PeerSocketTCP.h"
 #include "SocketTCP.h"
+#include <cstring>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -33,14 +34,14 @@ inline ServerSocketTCP::operator bool() const {
       this->bind_ == true);
 }
 
-inline int ServerSocketTCP::Listen(int conections) const {
+int ServerSocketTCP::Listen(int conections) const {
   return listen(this->socket_file_descriptor_, conections);
 }
 
-std::pair<PeerSocketTCP, struct sockaddr_in> ServerSocketTCP::Accept() const {
-  struct sockaddr_in client_address = 0;
+PeerSocketTCP ServerSocketTCP::Accept() const {
+  struct sockaddr_in client_address;
   socklen_t client_address_len = sizeof(client_address);
   int peer_fd = accept(this->socket_file_descriptor_, 
-      (struct sockaddr *) client_address, &client_address_len);
-  return {PeerSocketTCP(peer_fd), client_address};
+      (struct sockaddr *) &client_address, &client_address_len);
+  return PeerSocketTCP(peer_fd, client_address);
 }

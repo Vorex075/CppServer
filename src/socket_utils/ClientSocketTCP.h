@@ -7,7 +7,7 @@
 namespace socket_utils {
   class ClientSocketTCP: public SocketTCP {
     public:
-      ClientSocketTCP() : SocketTCP(), is_connected_(false) {};
+      ClientSocketTCP();
 
       /**
        * @brief Connects to a socket. 

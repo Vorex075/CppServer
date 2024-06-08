@@ -12,22 +12,6 @@ SocketTCP::~SocketTCP() {
   return;
 }
 
-int SocketTCP::GetFileDescriptor() const {
-  return this->socket_file_descriptor_;
-}
-
-inline int SocketTCP::Send(const std::string& buffer, int size) const {
-  return send(this->socket_file_descriptor_, buffer.c_str(), buffer.size(), 0);
-}
-
-int SocketTCP::Recv(std::string& buffer, int size) const {
-  char* char_buffer = new char[size];
-  int received_bytes = recv(this->socket_file_descriptor_, char_buffer, size, 0);
-  buffer = std::string(char_buffer);
-  delete[] char_buffer;
-  return received_bytes;
-}
-
 SocketTCP::operator bool() const {
   return (this->socket_file_descriptor_ > 0);
 }

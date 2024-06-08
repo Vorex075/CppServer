@@ -2,8 +2,8 @@
 #include "../socket_utils/ServerSocketTCP.h"
 #include "../socket_utils/PeerSocketTCP.h"
 
+
 #include <csignal>
-#include <cstdio>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -18,19 +18,18 @@ int main() {
   signal(SIGINT, handlesignal);
   socket_utils::ServerSocketTCP serv_socket("127.0.0.1", 8080);
   serv_socket.Listen(5);
-  std::cout << "Socket created with fd -> " << serv_socket.GetFileDescriptor() << "\n\n";
   int tries = 0;
   struct sockaddr_in client_addr;
   socket_utils::PeerSocketTCP peer_sock(serv_socket.Accept());
   std::cout << "accepted connection\n";
 
   while (true) {
-    std::string str;
-    str.resize(1024);
-    peer_sock.Recv(str, str.size());
+    char buffer[1024];
+    socket_utils::RecvData(&peer_sock, buffer, 1024);
+    std::string str(buffer);
     std::cout << "msg received -> " << str << "\n";
     str = "hola -> " + std::to_string(tries++);
-    peer_sock.Send(str, str.size());
+    socket_utils::SendData(&peer_sock, str.c_str(), str.size());
     std::cout << "msg sent -> " << str << "\n";
 
   }

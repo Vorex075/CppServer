@@ -17,18 +17,14 @@ namespace socket_utils {
        * @brief Closes the socket
        */
       virtual ~SocketTCP();
-      virtual int Send(const std::string& buffer, int size) const;
-      virtual int Recv(std::string& buffer, int size) const;
+
+      int GetSocketFD() const { return this->socket_file_descriptor_; }
       /**
        * @return True if the file descriptor is not negative. 
        * False otherwise.
        */
       virtual explicit operator bool() const = 0;
 
-      /**
-       * @return The file descriptor of the socket
-       */
-      int GetFileDescriptor() const;
     protected:
       int socket_file_descriptor_;
   };

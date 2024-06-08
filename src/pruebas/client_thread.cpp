@@ -1,4 +1,5 @@
 #include "../socket_utils/ClientSocketTCP.h"
+#include "../socket_utils/server_sock.h"
 
 #include <cstring>
 #include <iostream>
@@ -9,10 +10,9 @@
 
 void ListenSocket(socket_utils::ClientSocketTCP* socket) {
   while (true) {
-    std::string buffer;
-    buffer.resize(1024);
-    buffer.clear();
-    int received_bytes = socket->Recv(buffer, buffer.size());
+    char buffer[1024];
+    int received_bytes = socket_utils::RecvData(socket, buffer, 1024);
+
     if (received_bytes <= 0) {
       continue;
     }
@@ -27,11 +27,12 @@ void WriteSocket(socket_utils::ClientSocketTCP* socket) {
   while (true) {
     buffer.clear();
     std::cin >> buffer;
+
     if (buffer.size() > 1024) {
       std::cout << "Mu grande crack\n";
       continue;
     } 
-    socket->Send(buffer, buffer.size());
+    socket_utils::SendData(socket, buffer.c_str(), buffer.size());
   }
   std::cout << "FIN WRITESOCKET\n";
 }

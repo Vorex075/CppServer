@@ -9,28 +9,28 @@
 #include <queue>
 #include <unordered_map>
 
-
 class Room {
-  public:
-    Room() = default;
+public:
+  Room() = default;
 
-    bool AddMember(std::string member_name, std::unique_ptr<socket_utils::PeerSocketTCP> socket_connection);
+  bool
+  AddMember(std::string member_name,
+            std::shared_ptr<socket_utils::PeerSocketTCP> socket_connection);
 
-    /**
-     * @brief This method sends a message to all members in the room, but the one
-     * that sent the message.
-     */
-    int BroadcastMsg(const std::string& member_name, const std::string& buffer) const;
+  /**
+   * @brief This method sends a message to all members in the room, but the one
+   * that sent the message.
+   */
+  bool BroadcastMsg(const std::string &member_name,
+                    const std::string &buffer) const;
 
-    void ListenUsers() const;
+  void ListenUsers() const;
 
-  private:
-    std::unordered_map<std::string, std::shared_ptr<socket_utils::SocketTCP>> partitipants_;
+private:
+  std::unordered_map<std::string, std::shared_ptr<socket_utils::SocketTCP>>
+      partitipants_;
 
-    std::mutex room_mutex_;
+  std::mutex room_mutex_;
 };
-
-
-
 
 #endif

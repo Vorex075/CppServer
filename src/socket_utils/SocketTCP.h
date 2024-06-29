@@ -3,6 +3,12 @@
 #ifndef SOCKET_CONECTION_H
 #define SOCKET_CONECTION_H
 
+#include <cstring>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <string>
+
 #include <string>
 
 namespace socket_utils {

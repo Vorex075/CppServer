@@ -9,6 +9,7 @@
 #include <queue>
 #include <unordered_map>
 
+namespace socket_utils {
 class Room {
 public:
   Room() = default;
@@ -26,11 +27,15 @@ public:
 
   void ListenUsers() const;
 
+  unsigned int NumberOfUsers() const { return this->partitipants_.size(); }
+
 private:
   std::unordered_map<std::string, std::shared_ptr<socket_utils::SocketTCP>>
       partitipants_;
 
   std::mutex room_mutex_;
 };
+namespace rooms {}
 
+} // namespace socket_utils
 #endif

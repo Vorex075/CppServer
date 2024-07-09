@@ -6,25 +6,32 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-
 using namespace socket_utils;
 
 ClientSocketTCP::ClientSocketTCP() {
   this->socket_file_descriptor_ = socket(AF_INET, SOCK_STREAM, 0);
   this->is_connected_ = false;
+  memset(&this->socket_dir_, 0, sizeof(this->socket_dir_));
   return;
 }
 
-struct sockaddr_in ClientSocketTCP::Connect(const std::string& ip, int port) const {
-  struct sockaddr_in server_address;
-  memset(&server_address, 0, sizeof(server_address));
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(port);
-  if (inet_pton(AF_INET, ip.c_str(), &server_address.sin_addr) <= 0) {
-    //return -1;
+bool ClientSocketTCP::Connect(const std::string &ip, int port) {
+  if (this->is_connected_) {
+    return false;
   }
-  connect(this->socket_file_descriptor_, (struct sockaddr *) &server_address, sizeof(server_address));
-  return server_address;
+  memset(&this->socket_dir_, 0, sizeof(this->socket_dir_));
+  this->socket_dir_.sin_family = AF_INET;
+  this->socket_dir_.sin_port = htons(port);
+  if (inet_pton(AF_INET, ip.c_str(), &this->socket_dir_.sin_addr) <= 0) {
+    return false;
+  }
+  if (connect(this->socket_file_descriptor_,
+              (struct sockaddr *)&this->socket_dir_,
+              sizeof(this->socket_dir_)) < 0) {
+    return false;
+  }
+  this->is_connected_ = true;
+  return this->is_connected_;
 }
 
 ClientSocketTCP::operator bool() const {

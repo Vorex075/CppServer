@@ -2,6 +2,7 @@
 #include "../socket_utils/server_sock.h"
 
 #include <arpa/inet.h>
+#include <cerrno>
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
@@ -42,7 +43,12 @@ void WriteSocket(socket_utils::ClientSocketTCP *socket) {
 int main() {
 
   socket_utils::ClientSocketTCP client_socket;
-  auto dir = client_socket.Connect(std::string("127.0.0.1"), 8080);
+  if (!client_socket.Connect(std::string("127.0.0.1"), 8080)) {
+    const int kErrcode = errno;
+    std::cerr << "Error while trying to connect to 127.0.0.1:8080\n";
+    std::cerr << "Errno is " << kErrcode << ". (" << strerror(kErrcode)
+              << ")\n";
+  }
 
   std::thread t1(ListenSocket, &client_socket);
   std::thread t2(WriteSocket, &client_socket);

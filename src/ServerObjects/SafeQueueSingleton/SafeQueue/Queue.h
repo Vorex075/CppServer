@@ -15,24 +15,32 @@
 
 namespace socket_utils {
 template <class T> class Queue {
-  Queue() = default;
-  ~Queue() = default;
+public:
+  static Queue<T> &GetInstance();
 
-  bool PushBack(T &&value);
+  bool Push(T &&value);
 
   /**
    * @return A copy of the element at the front of the queue
    */
-  T ReadFront() const;
+  T Read() const { return this->queue_.front(); };
 
   /**
    * @brief Removes the element at the front of the queue
    * @return True if an element was removed. False otherwise (ex. The queue is
    * empty)
    */
-  bool PopFront() { this->queue_.pop(); };
+  void Pop() { this->queue_.pop(); };
+
+  T Get() const;
 
   bool Empty() const { return this->queue_.empty(); };
+
+protected:
+  Queue() = default;
+  ~Queue() = default;
+
+  friend std::unique_ptr<Queue<T>> std::make_unique<Queue<T>>();
 
 private:
   std::queue<T> queue_;
@@ -42,13 +50,19 @@ private:
 
 // Implementation
 namespace socket_utils {
-template <class T> bool Queue<T>::PushBack(T &&value) {
+
+template <class T> Queue<T> &Queue<T>::GetInstance() {
+  static Queue<T> instance;
+  return instance;
+}
+
+template <class T> bool Queue<T>::Push(T &&value) {
   std::lock_guard<std::mutex> guard(this->queue_mutex_);
-  this->queue_.push(std::forward(value));
+  this->queue_.push(std::move(value));
   return true;
 }
 
-template <class T> T Queue<T>::ReadFront() const {
+template <class T> T Queue<T>::Get() const {
   std::lock_guard<std::mutex> guard(this->queue_mutex_);
   T value = this->queue_.front();
   return std::move(value);

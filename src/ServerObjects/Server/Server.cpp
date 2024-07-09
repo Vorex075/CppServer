@@ -31,7 +31,7 @@ void HandleNewClient(std::shared_ptr<socket_utils::PeerSocketTCP> client) {
 }
 
 std::string AskUserName(socket_utils::PeerSocketTCP *client) {
-  std::string get_command = "GET user_name";
+  std::string get_command = "GET user_name 255";
   if (socket_utils::SendData(client, get_command.c_str(), get_command.size()) <=
       0) {
     return "";

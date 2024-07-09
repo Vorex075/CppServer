@@ -6,18 +6,15 @@
 #include "../../socket_utils/ServerSocketTCP.h"
 #include "../../socket_utils/server_sock.h"
 #include "../Room/Room.h"
+#include "ServerOptions.h"
 #include <map>
 #include <memory>
 #include <string>
 
-namespace server {
+typedef std::shared_ptr<socket_utils::PeerSocketTCP> ClientSocketPtr;
+typedef std::map<std::string, std::shared_ptr<socket_utils::Room>> RoomMap;
 
-enum class ServerOptions {
-  EXIT,
-  JOIN_ROOM,
-  EXIT_ROOM,
-  CREATE_ROOM,
-};
+namespace server {
 
 class Server {
 public:
@@ -37,7 +34,8 @@ private:
   socket_utils::ServerSocketTCP socket_;
 };
 
-void HandleNewClient(std::shared_ptr<socket_utils::PeerSocketTCP> client);
+void HandleNewClient(ClientSocketPtr client,
+                     std::shared_ptr<socket_utils::Room>);
 
 /**
  *  @brief Ask the client user name.
@@ -69,9 +67,8 @@ std::string ReadStatus(socket_utils::PeerSocketTCP *client);
  *  @brief Sends the list of rooms to the user.
  *  @return True if it worked. False otherwise (error code in errno)
  * */
-bool SendListOfRooms(
-    socket_utils::PeerSocketTCP *client,
-    std::shared_ptr<std::map<std::string, socket_utils::Room>> rooms);
+bool SendListOfRooms(socket_utils::PeerSocketTCP *client,
+                     std::shared_ptr<RoomMap> rooms);
 
 /**
  *  @brief Joins a user connection to an specific room.
@@ -82,9 +79,8 @@ bool SendListOfRooms(
  *  @param rooms A pointer to the map with all name-room relations
  *  @return True if the user joined the room. False otherwise.
  * */
-bool JoinRoom(std::shared_ptr<socket_utils::PeerSocketTCP> client,
-              std::string &&client_name, const std::string &room_name,
-              std::shared_ptr<std::map<std::string, socket_utils::Room>> rooms);
+bool JoinRoom(ClientSocketPtr client, std::string &&client_name,
+              const std::string &room_name, std::shared_ptr<RoomMap> rooms);
 
 /**
  * @brief Creates a new room
@@ -93,9 +89,8 @@ bool JoinRoom(std::shared_ptr<socket_utils::PeerSocketTCP> client,
  * @return A string with the name of the new room created. If "" (empty string)
  * is returned, an error ocurred. Error code will be in errno.
  * */
-std::string
-CreateRoom(socket_utils::PeerSocketTCP *client,
-           std::shared_ptr<std::map<std::string, socket_utils::Room>> rooms);
+std::string CreateRoom(socket_utils::PeerSocketTCP *client,
+                       std::shared_ptr<RoomMap> rooms);
 
 } // namespace server
 #endif

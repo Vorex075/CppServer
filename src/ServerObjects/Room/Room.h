@@ -14,6 +14,8 @@ class Room {
 public:
   Room() = default;
 
+  Room(const Room &another_room);
+
   bool
   AddMember(std::string member_name,
             std::shared_ptr<socket_utils::PeerSocketTCP> socket_connection);

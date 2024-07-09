@@ -1,9 +1,12 @@
-#include "../socket_utils/PeerSocketTCP.h"
-#include "../socket_utils/ServerSocketTCP.h"
-#include "../socket_utils/server_sock.h"
+#include "../../ServerObjects/Server/Server.h"
+#include "../../socket_utils/PeerSocketTCP.h"
+#include "../../socket_utils/ServerSocketTCP.h"
+#include "../../socket_utils/server_sock.h"
 
 #include <csignal>
 #include <iostream>
+#include <memory>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -20,9 +23,16 @@ int main() {
   struct sockaddr_in client_addr;
   socket_utils::PeerSocketTCP peer_sock(serv_socket.Accept());
   std::cout << "accepted connection\n";
-
+  std::shared_ptr<RoomMap> rooms(std::make_shared<RoomMap>());
+  rooms->insert({std::string("Hola"), std::make_shared<socket_utils::Room>()});
   char buffer[1024];
   while (true) {
+    auto option = server::AskOption(&peer_sock);
+    if (option == server::ServerOptions::JOIN_ROOM) {
+      server::SendListOfRooms(&peer_sock, rooms);
+      server::AskRoom(&peer_sock);
+    }
+
     int bytes = socket_utils::RecvData(&peer_sock, buffer, sizeof(buffer));
 
     if (bytes <= 0) {

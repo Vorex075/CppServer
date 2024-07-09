@@ -3,6 +3,13 @@
 #include "Room.h"
 #include "../../socket_utils/server_sock.h"
 
+namespace socket_utils {
+
+Room::Room(const Room &another_room) {
+  this->partitipants_ = another_room.partitipants_;
+  return;
+}
+
 bool Room::AddMember(
     std::string member_name,
     std::shared_ptr<socket_utils::PeerSocketTCP> socket_connection) {
@@ -29,3 +36,4 @@ bool Room::BroadcastMsg(const std::string &member_name,
   }
   return true;
 }
+} // namespace socket_utils

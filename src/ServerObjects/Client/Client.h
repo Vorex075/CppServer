@@ -37,7 +37,8 @@ void ClearTerminal();
  * */
 ClientOption GetClientOption();
 
-bool ConnectToServer(const std::string ip, const int port);
+bool ConnectToServer(socket_utils::ClientSocketTCP *client_socket,
+                     const std::string ip, const int port);
 
 server::ServerOptions GetServerOption();
 

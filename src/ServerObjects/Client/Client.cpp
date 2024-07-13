@@ -81,9 +81,9 @@ ClientOption GetClientOption() {
   return ConvertToClientOption(std::stoi(option));
 }
 
-bool ConnectToServer(const std::string ip, const int port) {
-  socket_utils::ClientSocketTCP client_socket;
-  if (!client_socket.Connect(ip, port)) {
+bool ConnectToServer(socket_utils::ClientSocketTCP *client_socket,
+                     const std::string ip, const int port) {
+  if (!client_socket->Connect(ip, port)) {
     const int kErrorcode = errno;
     std::cerr << "Error while trying to connect to " << ip << ":" << port
               << "\nError code is: " << kErrorcode << "("
@@ -96,13 +96,13 @@ bool ConnectToServer(const std::string ip, const int port) {
 server::ServerOptions GetServerOption() { return server::ServerOptions::EXIT; }
 
 void StartClient() {
-
+  socket_utils::ClientSocketTCP client_socket;
   ClientOption option = GetClientOption();
   if (option == ClientOption::EXIT) {
     return;
   }
   if (option == ClientOption::CONNECT) {
-    if (!ConnectToServer("127.0.0.1", 8080)) {
+    if (!ConnectToServer(&client_socket, "127.0.0.1", 8080)) {
       return;
     }
     std::cout << "Successfully connected to the server!\n";
